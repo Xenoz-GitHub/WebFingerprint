@@ -32,6 +32,8 @@ Evidence collect_evidence(const wf::http::FetchResult& result) {
     evidence.script_srcs = html.scripts;
     evidence.stylesheet_hrefs = html.stylesheets;
     evidence.anchor_links = html.links;
+    evidence.has_inline_script = html.has_inline_script;
+    evidence.has_html5_doctype = html.has_html5_doctype;
 
     for (const auto& cookie : wf::http::parse_cookies(response.headers)) {
         evidence.cookie_names.push_back(cookie.name);

@@ -152,9 +152,11 @@ TEST_CASE("react is detected via script src and data-reactroot") {
 
     const auto via_script = engine.analyze(
         evidence_from({}, "<html><head><script src=\"https://cdn.example.com/react.production.min.js\"></script></head></html>"));
-    REQUIRE(via_script.size() == 1);
-    CHECK(via_script[0].name == "React");
+    REQUIRE(via_script.size() == 2);
+    CHECK(via_script[0].name == "JavaScript");
     CHECK(via_script[0].confidence == Catch::Approx(0.9));
+    CHECK(via_script[1].name == "React");
+    CHECK(via_script[1].confidence == Catch::Approx(0.9));
 
     const auto via_root = engine.analyze(
         evidence_from({}, "<div id=\"root\" data-reactroot=\"\">hi</div>"));
@@ -180,9 +182,11 @@ TEST_CASE("wordpress is detected via wp-content body marker") {
     const auto technologies = engine.analyze(
         evidence_from({}, "<link rel=\"stylesheet\" href=\"https://site.com/wp-content/themes/twenty/css/main.css\">"));
 
-    REQUIRE(technologies.size() == 1);
-    CHECK(technologies[0].name == "WordPress");
-    CHECK(technologies[0].confidence == Catch::Approx(0.7));
+    REQUIRE(technologies.size() == 2);
+    CHECK(technologies[0].name == "CSS");
+    CHECK(technologies[0].confidence == Catch::Approx(0.9));
+    CHECK(technologies[1].name == "WordPress");
+    CHECK(technologies[1].confidence == Catch::Approx(0.7));
 }
 
 TEST_CASE("plain-text mentions of technology names do not trigger detections") {
@@ -203,6 +207,32 @@ TEST_CASE("header name casing does not matter") {
 
     REQUIRE(technologies.size() == 1);
     CHECK(technologies[0].name == "nginx");
+}
+
+TEST_CASE("frontend languages are detected from markup") {
+    FingerprintEngine engine;
+    const auto technologies = engine.analyze(evidence_from(
+        {}, "<!DOCTYPE html><html><head>"
+            "<link rel=\"stylesheet\" href=\"/main.css\">"
+            "</head><body><script>var x = 1;</script></body></html>"));
+
+    REQUIRE(technologies.size() == 3);
+    CHECK(technologies[0].name == "CSS");
+    CHECK(technologies[0].category == "language");
+    CHECK(technologies[1].name == "HTML5");
+    CHECK(technologies[1].category == "markup");
+    CHECK(technologies[2].name == "JavaScript");
+    CHECK(technologies[2].category == "language");
+}
+
+TEST_CASE("typescript is detected via source maps") {
+    FingerprintEngine engine;
+    const auto technologies = engine.analyze(evidence_from(
+        {}, "<html><body><!--# sourceMappingURL=app.ts.map--></body></html>"));
+
+    REQUIRE(technologies.size() == 1);
+    CHECK(technologies[0].name == "TypeScript");
+    CHECK(technologies[0].confidence == Catch::Approx(0.7));
 }
 
 TEST_CASE("multiple technologies are sorted by confidence descending") {
@@ -314,13 +344,14 @@ TEST_CASE("full pipeline works against a real server") {
 
     FingerprintEngine engine;
     const auto technologies = engine.analyze(evidence);
-    REQUIRE(technologies.size() == 3);
+    REQUIRE(technologies.size() == 4);
     CHECK(technologies[0].name == "WordPress");
     CHECK(technologies[0].confidence == Catch::Approx(1.0 - 0.1 * 0.3));
     CHECK(technologies[0].version == "6.4.3");
-    CHECK(technologies[1].name == "React");
-    CHECK(technologies[2].name == "nginx");
-    CHECK(technologies[2].version == "1.24.0");
+    CHECK(technologies[1].name == "JavaScript");
+    CHECK(technologies[2].name == "React");
+    CHECK(technologies[3].name == "nginx");
+    CHECK(technologies[3].version == "1.24.0");
 }
 
 TEST_CASE("evidence uses the final url after redirects") {

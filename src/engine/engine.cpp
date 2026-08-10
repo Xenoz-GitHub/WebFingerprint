@@ -134,6 +134,27 @@ bool match_rule(const Rule& rule, const Evidence& evidence, std::string& matched
             }
             return false;
         }
+        case MatchType::ScriptsPresent: {
+            if (!evidence.script_srcs.empty() || evidence.has_inline_script) {
+                matched_text = rule.pattern;
+                return true;
+            }
+            return false;
+        }
+        case MatchType::StyleSheetsPresent: {
+            if (!evidence.stylesheet_hrefs.empty()) {
+                matched_text = rule.pattern;
+                return true;
+            }
+            return false;
+        }
+        case MatchType::Html5DoctypePresent: {
+            if (evidence.has_html5_doctype) {
+                matched_text = rule.pattern;
+                return true;
+            }
+            return false;
+        }
     }
     return false;
 }

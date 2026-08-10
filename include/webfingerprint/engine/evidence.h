@@ -21,6 +21,8 @@ struct Evidence {
     std::vector<std::string> stylesheet_hrefs;
     std::vector<std::string> anchor_links;
     std::vector<std::string> cookie_names;
+    bool has_inline_script = false;
+    bool has_html5_doctype = false;
 
     std::optional<std::string> header(std::string_view name) const;
 };

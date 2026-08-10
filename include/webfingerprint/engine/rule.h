@@ -16,6 +16,9 @@ enum class MatchType {
     LinkHrefContains,
     CookieNameEquals,
     UrlContains,
+    ScriptsPresent,
+    StyleSheetsPresent,
+    Html5DoctypePresent,
 };
 
 struct Rule {

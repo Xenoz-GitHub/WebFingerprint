@@ -18,6 +18,7 @@ struct HtmlInfo {
     std::vector<std::string> stylesheets;
     std::vector<std::string> links;
     bool has_inline_script = false;
+    bool has_html5_doctype = false;
 };
 
 HtmlInfo analyze_html(std::string_view body);

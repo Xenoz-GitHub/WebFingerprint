@@ -141,6 +141,7 @@ TEST_CASE("malformed markup degrades gracefully") {
 
 TEST_CASE("doctype and processing instructions are skipped") {
     const HtmlInfo info = analyze_html("<!DOCTYPE html><link rel='stylesheet' href='/s.css'>");
+    CHECK(info.has_html5_doctype);
     REQUIRE(info.stylesheets.size() == 1);
     CHECK(info.stylesheets[0] == "/s.css");
 }

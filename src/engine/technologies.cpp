@@ -88,6 +88,39 @@ std::vector<TechnologyDef> builtin_technologies() {
         },
     });
 
+    technologies.push_back({
+        "HTML5",
+        "markup",
+        {
+            {"html5 doctype present", MatchType::Html5DoctypePresent, "", "html5", 0.9},
+        },
+    });
+
+    technologies.push_back({
+        "CSS",
+        "language",
+        {
+            {"stylesheet link present", MatchType::StyleSheetsPresent, "", "css", 0.9},
+        },
+    });
+
+    technologies.push_back({
+        "JavaScript",
+        "language",
+        {
+            {"script element present", MatchType::ScriptsPresent, "", "javascript", 0.9},
+        },
+    });
+
+    technologies.push_back({
+        "TypeScript",
+        "language",
+        {
+            body_contains("body references a source map", "sourceMappingURL", 0.7),
+            {"script src references a .tsx file", MatchType::ScriptSrcContains, "", ".tsx", 0.8},
+        },
+    });
+
     return technologies;
 }
 

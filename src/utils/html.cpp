@@ -217,6 +217,11 @@ HtmlInfo analyze_html(std::string_view body) {
 
         if (body.substr(open, 9) == "<!DOCTYPE" || body.substr(open, 8) == "<!doctype") {
             const size_t close = body.find('>', open);
+            if (close != std::string_view::npos &&
+                wf::ascii_lower(body.substr(open, close - open)).find("html") !=
+                    std::string::npos) {
+                info.has_html5_doctype = true;
+            }
             pos = close == std::string_view::npos ? body.size() : close + 1;
             continue;
         }

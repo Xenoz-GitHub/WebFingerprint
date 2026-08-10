@@ -77,6 +77,17 @@ std::vector<TechnologyDef> builtin_technologies() {
         },
     });
 
+    technologies.push_back({
+        "Vercel",
+        "paas",
+        {
+            header_contains("Server", "Server header mentions Vercel", "vercel", 0.9),
+            {"x-vercel-cache request header present", MatchType::HeaderPresent, "X-Vercel-Cache",
+             "", 0.8},
+            {"x-vercel-id request header present", MatchType::HeaderPresent, "X-Vercel-Id", "", 0.8},
+        },
+    });
+
     return technologies;
 }
 
